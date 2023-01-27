@@ -714,10 +714,10 @@ style "menu_item"
   bg[SELECTED] = @selected_fg_color
 
 	fg[NORMAL] = @fg_color
-	fg[SELECTED] = @selected_fg_color
-  fg[PRELIGHT] = @selected_fg_color
+	fg[SELECTED] = @fg_color
+  fg[PRELIGHT] = @fg_color
 
-  text[PRELIGHT] = @selected_fg_color
+  text[PRELIGHT] = @fg_color
 
   engine "pixmap" {
 
@@ -890,7 +890,7 @@ style "menu_item"
     image {
       function = ARROW
       state = PRELIGHT
-      overlay_file = "assets/menu-arrow-prelight.png"
+      overlay_file = "assets/menu-arrow.png"
       overlay_border = { 0, 0, 0, 0 }
       overlay_stretch = FALSE
       arrow_direction = RIGHT
@@ -952,109 +952,69 @@ style "entry" {
   ythickness = 4
 
   base[NORMAL] = @base_color
+  base[ACTIVE] = @base_color
   base[INSENSITIVE] = @insensitive_bg_color
 
   engine "pixmap" {
 
     image {
       function = SHADOW
-      detail = "entry"
       state = NORMAL
-      shadow = IN
-      file = "assets/entry-border-bg.png"
-      border = { 12, 12, 12, 12 }
+      detail= "entry"
+      file = "assets/entry-border-bg-solid.png"
+      border = { 6, 6, 6, 6 }
       stretch = TRUE
     }
 
     image {
       function = SHADOW
-      detail = "entry"
       state = INSENSITIVE
-      shadow = IN
+      detail = "entry"
       file = "assets/entry-border-disabled-bg.png"
-      border = { 12, 12, 12, 12 }
+      border = { 6, 6, 6, 6 }
       stretch = TRUE
     }
 
     image {
       function = SHADOW
+      state = ACTIVE
       detail = "entry"
-      state = ACTIVE
-      file = "assets/entry-border-active-bg.png"
-      border = { 12, 12, 12, 12 }
+      file = "assets/entry-border-active-bg-solid.png"
+      border = { 6, 6, 6, 6 }
       stretch = TRUE
-    }
-
-    image {
-      function = FLAT_BOX
-      detail = "entry_bg"
-      state = NORMAL
-      overlay_file = "assets/null.png"
-      overlay_border = { 0, 0, 0, 0 }
-      overlay_stretch = TRUE
-    }
-
-    image {
-      function = FLAT_BOX
-      detail = "entry_bg"
-      state = ACTIVE
-      overlay_file = "assets/null.png"
-      overlay_border = { 0, 0, 0, 0 }
-      overlay_stretch = TRUE
     }
   }
 }
 
 style "notebook_entry" {
-  xthickness = 6
 
   engine "pixmap" {
 
     image {
       function = SHADOW
-      detail = "entry"
       state = NORMAL
-      shadow = IN
+      detail = "entry"
       file = "assets/notebook-entry-border-bg.png"
-      border = { 12, 12, 12, 12 }
+      border = { 6, 6, 6, 6 }
       stretch = TRUE
     }
 
     image {
       function = SHADOW
-      detail = "entry"
       state = INSENSITIVE
-      shadow = IN
+      detail = "entry"
       file = "assets/notebook-entry-border-disabled-bg.png"
-      border = { 12, 12, 12, 12 }
+      border = { 6, 6, 6, 6 }
       stretch = TRUE
     }
 
     image {
       function = SHADOW
+      state = ACTIVE
       detail = "entry"
-      state = ACTIVE
       file = "assets/notebook-entry-border-active-bg.png"
-      border = { 12, 12, 12, 12 }
+      border = { 6, 6, 6, 6 }
       stretch = TRUE
-    }
-
-    image {
-      function = FLAT_BOX
-      detail = "entry_bg"
-      state = NORMAL
-      overlay_file = "assets/null.png"
-      overlay_border = { 0, 0, 0, 0 }
-      overlay_stretch = TRUE
-    }
-
-    image {
-      function = FLAT_BOX
-      detail = "entry_bg"
-      state = ACTIVE
-      overlay_file = "assets/null.png"
-      overlay_border = { 0, 0, 0, 0 }
-      overlay_stretch = TRUE
     }
   }
 }
@@ -2031,14 +1991,19 @@ style "progressbar" {
 
 style "separator_menu_item" {
 
-  engine "pixmap" {
-
-    image {
-      function = BOX
-      file = "assets/null.png"
-      border = { 0, 0, 1, 0 }
-      stretch = TRUE
-    }
+  GtkSeparatorMenuItem::horizontal-padding = 0
+  GtkWidget::wide-separators = 1
+  GtkWidget::separator-width = 1
+  GtkWidget::separator-height = 7
+    
+  xthickness = 1
+  ythickness = 1
+    
+  bg[NORMAL] = @menu_separator_color
+    
+  engine "murrine" 
+  {
+      separatorstyle = 0
   }
 }
 
@@ -2372,6 +2337,7 @@ class "*HandleBox"                                                  style "toolb
 
 widget_class "*<GtkMenu>*"                                          style "menu"
 widget_class "*<GtkMenuItem>*"                                      style "menu_item"
+widget_class "*<GtkSeparatorMenuItem>*"                             style "separator_menu_item"
 widget_class "*<GtkCheckButton>*"                                   style "checkbutton"
 widget_class "*<GtkComboBox>"                                       style "combobox"
 widget_class "*<GtkComboBox>*<GtkButton>"                           style "combobox_button"
@@ -2414,10 +2380,6 @@ widget_class "*<GimpToolbox>*<GtkFrame>"                            style "gimp_
 widget_class "*Chrom*Button*"                                       style "button"
 widget_class "*<GtkCustomMenu>*<GtkCustomMenuItem>*"                style "chrome_menu_item"
 
-# We use this weird selector to target an offscreen entry as created
-# by Chrome/Chromium to derive the style for its toolbar
-widget_class "<GtkEntry>"                                           style "standalone_entry"
-
 # Eclipse/SWT
 widget "gtk-tooltips*"                                              style "eclipse-tooltips"
 widget "*swt-toolbar-flat"                                          style "null"
@@ -2425,10 +2387,6 @@ widget "*swt-toolbar-flat"                                          style "null"
 # Openoffice, Libreoffice
 class "GtkWindow"                                                   style "toplevel_hack"
 widget "*openoffice-toplevel*"                                      style "ooo_stepper_hack"
-widget "*openoffice-toplevel*GtkEntry"                              style "libreoffice_entry"
-widget "*openoffice-toplevel*GtkSpinButton"                         style "libreoffice_entry"
-widget "*libreoffice-toplevel*GtkEntry"                             style "libreoffice_entry"
-widget "*libreoffice-toplevel*GtkSpinButton"                        style "libreoffice_entry"
 
 # Xfce
 widget_class "*XfdesktopIconView*"                                  style "xfdesktop-icon-view"
